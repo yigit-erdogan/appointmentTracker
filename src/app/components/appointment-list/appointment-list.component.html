@@ -1,0 +1,56 @@
+<div class="appointment-list-container">
+  <div class="header">
+    <h1>Randevularım</h1>
+    <button mat-fab extended color="primary" (click)="showAppointmentForm()" class="new-appointment-btn" *ngIf="!isFormVisible">
+      Yeni Randevu Ekle
+    </button>
+  </div>
+
+  <div class="form-container" *ngIf="isFormVisible">
+    <app-appointment-form 
+      [data]="selectedAppointment"
+      (formClose)="onFormClose($event)">
+    </app-appointment-form>
+  </div>
+
+  <mat-table [dataSource]="appointments$" class="mat-elevation-z8" *ngIf="!isFormVisible">
+    <ng-container matColumnDef="title">
+      <mat-header-cell *matHeaderCellDef>Başlık</mat-header-cell>
+      <mat-cell *matCellDef="let appointment">{{appointment.title}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <mat-header-cell *matHeaderCellDef>Tarih</mat-header-cell>
+      <mat-cell *matCellDef="let appointment">{{appointment.date | date:'dd/MM/yyyy'}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="time">
+      <mat-header-cell *matHeaderCellDef>Saat</mat-header-cell>
+      <mat-cell *matCellDef="let appointment">{{appointment.time}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="category">
+      <mat-header-cell *matHeaderCellDef>Kategori</mat-header-cell>
+      <mat-cell *matCellDef="let appointment">
+        <span class="category-badge">{{appointment.category || 'Genel'}}</span>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>İşlemler</mat-header-cell>
+      <mat-cell *matCellDef="let appointment">
+        <div class="action-buttons">
+          <button mat-stroked-button color="primary" (click)="editAppointment(appointment)" class="action-button">
+            Düzenle
+          </button>
+          <button mat-stroked-button color="warn" (click)="deleteAppointment(appointment.id)" class="action-button">
+            Sil
+          </button>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>

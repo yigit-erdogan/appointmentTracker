@@ -1,0 +1,53 @@
+<form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="appointment-form">
+  <h2>{{isEditMode ? 'Randevu Düzenle' : 'Yeni Randevu'}}</h2>
+
+  <mat-form-field appearance="outline" class="form-field">
+    <mat-label>Başlık</mat-label>
+    <input matInput formControlName="title" required>
+    <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
+      Başlık zorunludur
+    </mat-error>
+  </mat-form-field>
+
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Tarih</mat-label>
+      <input matInput type="date" formControlName="date" required>
+      <mat-error *ngIf="appointmentForm.get('date')?.hasError('required')">
+        Tarih zorunludur
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Saat</mat-label>
+      <input matInput type="time" formControlName="time" required>
+      <mat-error *ngIf="appointmentForm.get('time')?.hasError('required')">
+        Saat zorunludur
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form-row">
+    <select formControlName="category" class="form-select">
+      <option value="">Genel</option>
+      <option *ngFor="let category of categories" [value]="category">{{category}}</option>
+    </select>
+  </div>
+
+  <mat-form-field appearance="outline" class="form-field">
+    <mat-label>Konum</mat-label>
+    <input matInput formControlName="location">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="form-field">
+    <mat-label>Notlar</mat-label>
+    <textarea matInput formControlName="notes" rows="3"></textarea>
+  </mat-form-field>
+
+  <div class="form-actions">
+    <button mat-button type="button" (click)="onCancel()">İptal</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!appointmentForm.valid">
+      {{isEditMode ? 'Güncelle' : 'Kaydet'}}
+    </button>
+  </div>
+</form> 
