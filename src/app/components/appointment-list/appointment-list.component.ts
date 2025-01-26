@@ -10,6 +10,8 @@ import { AppointmentFormComponent } from '../appointment-form/appointment-form.c
 import { SearchDialogComponent } from '../search-dialog/search-dialog.component';
 import { CategoryDialogComponent } from '../category-dialog/category-dialog.component';
 import { AppointmentDetailsComponent } from '../appointment-details/appointment-details.component';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-appointment-list',
@@ -150,9 +152,13 @@ export class AppointmentListComponent implements OnInit {
 
   constructor(
     private appointmentService: AppointmentService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private router: Router
   ) {
-    this.appointments$ = this.appointmentService.getAppointments();
+    this.appointments$ = this.authService.isProvider() ? 
+      this.appointmentService.getAllAppointments() : 
+      this.appointmentService.getAppointments();
     this.filteredAppointments$ = this.appointments$;
     this.filterAndSortAppointments();
   }

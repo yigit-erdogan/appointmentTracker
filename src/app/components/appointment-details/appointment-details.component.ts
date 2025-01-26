@@ -1,153 +1,111 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Appointment } from '../../models/appointment.model';
 
 @Component({
   selector: 'app-appointment-details',
   template: `
-    <div class="appointment-details">
-      <h2 mat-dialog-title>Randevu Detayları</h2>
-      <mat-dialog-content>
-        <div class="detail-section">
-          <div class="detail-item">
-            <label>Başlık:</label>
-            <span>{{data.title}}</span>
-          </div>
-          <div class="detail-item">
-            <label>Tarih:</label>
-            <span>{{data.date | date:'dd/MM/yyyy'}}</span>
-          </div>
-          <div class="detail-item">
-            <label>Saat:</label>
-            <span>{{data.time}}</span>
-          </div>
-          <div class="detail-item">
-            <label>Kategori:</label>
-            <span class="category-badge" [class]="'category-' + getCategoryClass(data.category || 'Genel')">
-              {{data.category || 'Genel'}}
-            </span>
-          </div>
-          <div class="detail-item notes-section">
-            <label>Notlar:</label>
-            <p *ngIf="data.notes" class="notes">{{data.notes}}</p>
-            <p *ngIf="!data.notes" class="no-notes">Bu randevu için not bulunmamaktadır.</p>
-          </div>
+    <h2 mat-dialog-title>Randevu Detayları</h2>
+    
+    <mat-dialog-content>
+      <div class="details-container">
+        <div class="detail-row">
+          <span class="label">Başlık:</span>
+          <span class="value">{{ data.title }}</span>
         </div>
-      </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-button (click)="close()">Kapat</button>
-      </mat-dialog-actions>
-    </div>
+        
+        <div class="detail-row">
+          <span class="label">Tarih:</span>
+          <span class="value">{{ data.date | date:'dd/MM/yyyy' }}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="label">Saat:</span>
+          <span class="value">{{ data.time }}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="label">Kategori:</span>
+          <span class="value">{{ data.category || 'Genel' }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="label">Durum:</span>
+          <span class="value status-badge" [class]="'status-' + data.status">
+            {{ getStatusText(data.status) }}
+          </span>
+        </div>
+        
+        <div class="detail-row" *ngIf="data.notes">
+          <span class="label">Notlar:</span>
+          <span class="value notes">{{ data.notes }}</span>
+        </div>
+      </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Kapat</button>
+    </mat-dialog-actions>
   `,
   styles: [`
-    .appointment-details {
-      padding: 20px;
-      max-width: 500px;
+    .details-container {
+      min-width: 300px;
+      padding: 16px;
     }
 
-    .detail-section {
+    .detail-row {
       display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .detail-item {
-      display: flex;
+      margin-bottom: 16px;
       align-items: flex-start;
-      gap: 12px;
 
-      label {
-        min-width: 80px;
+      .label {
         font-weight: 500;
-        color: rgba(0, 0, 0, 0.54);
+        min-width: 100px;
+        color: #666;
       }
 
-      span {
-        color: rgba(0, 0, 0, 0.87);
-      }
-    }
-
-    .notes-section {
-      margin-top: 8px;
-      
-      label {
-        margin-bottom: 8px;
-      }
-
-      .notes {
-        margin: 0;
-        white-space: pre-line;
-        line-height: 1.5;
-      }
-
-      .no-notes {
-        margin: 0;
-        color: rgba(0, 0, 0, 0.38);
-        font-style: italic;
+      .value {
+        flex: 1;
+        
+        &.notes {
+          white-space: pre-wrap;
+        }
       }
     }
 
-    .category-badge {
+    .status-badge {
+      display: inline-block;
       padding: 4px 12px;
       border-radius: 16px;
-      font-size: 14px;
+      font-size: 12px;
       font-weight: 500;
-    }
 
-    .category-is {
-      background-color: #1E88E5;
-      color: white;
-    }
+      &.status-pending {
+        background-color: #fff3e0;
+        color: #e65100;
+      }
 
-    .category-kisisel {
-      background-color: #7B1FA2;
-      color: white;
-    }
+      &.status-approved {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
 
-    .category-saglik {
-      background-color: #43A047;
-      color: white;
-    }
-
-    .category-egitim {
-      background-color: #FB8C00;
-      color: white;
-    }
-
-    .category-diger {
-      background-color: #757575;
-      color: white;
-    }
-
-    .category-genel {
-      background-color: #ECEFF1;
-      color: #455A64;
+      &.status-rejected {
+        background-color: #ffebee;
+        color: #c62828;
+      }
     }
   `]
 })
 export class AppointmentDetailsComponent {
-  constructor(
-    public dialogRef: MatDialogRef<AppointmentDetailsComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: Appointment) {}
 
-  getCategoryClass(category: string): string {
-    switch (category) {
-      case 'İş':
-        return 'is';
-      case 'Kişisel':
-        return 'kisisel';
-      case 'Sağlık':
-        return 'saglik';
-      case 'Eğitim':
-        return 'egitim';
-      case 'Diğer':
-        return 'diger';
-      default:
-        return 'genel';
+  getStatusText(status: string): string {
+    switch (status) {
+      case 'pending': return 'Bekliyor';
+      case 'approved': return 'Onaylandı';
+      case 'rejected': return 'Reddedildi';
+      default: return status;
     }
-  }
-
-  close(): void {
-    this.dialogRef.close();
   }
 } 

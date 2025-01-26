@@ -1,11 +1,12 @@
 export interface Appointment {
   id: string;
   title: string;
-  date: Date;
+  date: string;
   time: string;
-  notes?: string;
   category?: string;
-  location?: string;
+  notes?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  userId: string;
 }
 
 export type AppointmentCategory = 'Doktor' | 'Toplantı' | 'Kişisel' | string; 
